@@ -46,6 +46,7 @@ int _pickup_peep_old_x = SPRITE_LOCATION_NULL;
 #include <algorithm>
 #include <set>
 #include <string>
+#include <iostream>
 
 #include "../core/Console.hpp"
 #include "../core/Json.hpp"
@@ -570,8 +571,14 @@ bool Network::CheckSRAND(uint32 tick, uint32 srand0)
 		server_srand0_tick = 0;
 		// Check that the server and client sprite hashes match
 		const bool sprites_mismatch = server_sprite_hash[0] != '\0' && strcmp(sprite_checksum(), server_sprite_hash);
+
 		// Check PRNG values and sprite hashes, if exist
-		if ((srand0 != server_srand0) || sprites_mismatch) {
+		if (srand0 != server_srand0) {
+			std::cout << "srand mismatch detected" << std::endl; //PRINT TO CONSOLE
+			return false;
+		}
+		else if (sprites_mismatch) {
+			std::cout << "Sprite Mismatch detected" << std::endl; //PRINT TO CONSOLE
 			return false;
 		}
 	}
