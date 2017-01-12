@@ -1033,6 +1033,10 @@ void Network::Server_Send_TICK()
 	std::unique_ptr<NetworkPacket> packet(NetworkPacket::Allocate());
 	*packet << (uint32)NETWORK_COMMAND_TICK << (uint32)gCurrentTicks << (uint32)gScenarioSrand0;
 	uint32 flags = 0;
+
+#ifdef DEBUG
+	flags |= NETWORK_TICK_FLAG_CHECKSUMS;
+#else
 	// Simple counter which limits how often a sprite checksum gets sent.
 	// This can get somewhat expensive, so we don't want to push it every tick in release,
 	// but debug version can check more often.
@@ -1042,6 +1046,8 @@ void Network::Server_Send_TICK()
 		checksum_counter = 0;
 		flags |= NETWORK_TICK_FLAG_CHECKSUMS;
 	}
+#endif
+
 	// Send flags always, so we can understand packet structure on the other end,
 	// and allow for some expansion.
 	*packet << flags;
